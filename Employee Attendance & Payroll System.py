@@ -66,6 +66,8 @@ def update_employee():
 
             if choice == "name":
                 cursor.execute("UPDATE employees SET name = ? WHERE id = ?", (update.strip().lower().capitalize(), id))
+            elif choice == "position":
+                cursor.execute("UPDATE employees SET position = ? WHERE id = ?", (updat))
 
 
 
