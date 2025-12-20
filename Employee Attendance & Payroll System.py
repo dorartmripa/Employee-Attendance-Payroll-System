@@ -188,7 +188,7 @@ def update_attendance():
 def search():
     while True:
         print("To search for an employee, please add the following: ")
-        name = input("Enter the id of the employee you want to search for: ").strip()
+        name = input("Enter the name of the employee you want to search for: ").strip()
         
         cursor.execute("SELECT * from employees WHERE name LIKE ?", (f"%{name}%",))
         exists = cursor.fetchall()
@@ -197,7 +197,7 @@ def search():
             print("\nUh-oh! There is no employee with that name!\n") 
             continue
 
-        print(f"Employee names that match *{name}*:\n")
+        print(f"\nEmployee names that match *{name}*:\n")
 
         cursor.execute("SELECT * FROM employees")
         header = [description[0] for description in cursor.description]
@@ -205,7 +205,7 @@ def search():
         
         for results in exists:
             print(results)
-
+        print()
         break
 
 def reports():
@@ -250,7 +250,7 @@ def reports():
         cursor.execute("SELECT name from employees WHERE id = ?", (id,))
         name = cursor.fetchone()[0]         
 
-        print(f"Employee ID: {id} | Monthly Payroll for {name}: £{monthly_payroll}\n")
+        print(f"\nEmployee ID: {id} | Monthly Payroll for {name}: £{monthly_payroll}\n")
         break
 
 def main():
