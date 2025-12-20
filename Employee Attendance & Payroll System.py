@@ -3,7 +3,7 @@ import sqlite3
 database = sqlite3.connect("company.db")
 cursor = database.cursor()
 
-def sql_database():
+def sql_database(): #Creates two database if it doesn't exist already
     database.execute("PRAGMA foreign_keys = ON;")
 
     cursor.execute("""
@@ -27,32 +27,32 @@ def sql_database():
 
     database.commit()
 
-def add_employee():
+def add_employee(): #Adds new employee to the employees database
     print("To add the new employee, please add the following: ")
     name = input("Enter the name of the new employee: ").strip().title()
     position = input("Enter the position of the new employee: ").strip().title()
     hourly_rate = float(input("Enter the hourly rate of the new employee:  "))    
 
-    cursor.execute("INSERT INTO employees (name, position, hourly_rate) VALUES (?, ?, ?) ", (name, position, hourly_rate))
+    cursor.execute("INSERT INTO employees (name, position, hourly_rate) VALUES (?, ?, ?) ", (name, position, hourly_rate)) #Adds the new employee to the database
 
-    database.commit()
+    database.commit() #Saves changes
     print("\nNew employee added successfully!\n")
 
-def update_employee():
+def update_employee(): #Updates an employee in the employees database
     while True:
         try:
             print("To update a employee, please add the following: ")
-            id = int(input("Enter the id of the employee you would like to update:"))
-        except ValueError:
+            id = int(input("Enter the id of the employee you would like to update: "))
+        except ValueError:  #Catches error if user didn't eneter a number
             print("\nUh-oh! Please enter a number!\n")
-            continue
+            continue  #Restart the loop to ask for input again
 
         cursor.execute("SELECT 1 from employees WHERE id = ? LIMIT 1", (id,))
         exists = cursor.fetchone()
 
-        if not exists:
+        if not exists: #Checks if no matching employee were found
             print("\nUh-oh! There is no employee with that id!\n") 
-            continue
+            continue  #Restart the loop to ask for input again
 
         while True:
             print("What would you like to update:")
@@ -61,9 +61,9 @@ def update_employee():
             print("- Hourly Rate: ")
             choice = input("Enter your choice: ").strip().lower()
 
-            if choice not in ["name", "position", "hourly rate"]:
+            if choice not in ["name", "position", "hourly rate"]: #Checks if user entered a valid option
                 print("\nUh-oh! Please enter a valid option!\n")
-                continue
+                continue  #Restart the loop to ask for input again
             
             while True:
                 update = input(f"Enter the new information for {choice}: ")
@@ -72,84 +72,84 @@ def update_employee():
                     try:
                         update = float(update)
                         cursor.execute("UPDATE employees SET hourly_rate = ? WHERE id = ?", (update, id))
-                    except ValueError:
+                    except ValueError:  #Catches error if user didn't eneter a number
                         print("\nUh-oh! Please enter a number!\n")
-                        continue
+                        continue  #Restart the loop to ask for input again
                 else:
                     cursor.execute(f"UPDATE employees SET {choice} = ? WHERE id = ?", (update.strip().lower().title(), id))
                 
                 database.commit()
                 print("\nThe record was updated successfully!\n")
-                break
-            break
-        break
+                break #breaks out of loop if a valid option was entered
+            break #breaks out of loop if a valid option was entered
+        break  #Exit the loop after updating the employee
 
-def remove_employee():
+def remove_employee(): #Removes an employee from the employees database
     while True:
         try:
             print("To remove an employee, please add the following: ")
             id = int(input("Enter the id of the employee you would like to remove: "))
-        except ValueError:
+        except ValueError:  #Catches error if user didn't eneter a number
             print("\nUh-oh! Please enter a number!\n")
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("SELECT 1 from employees WHERE id = ? LIMIT 1", (id,))
         exists = cursor.fetchone()
 
-        if not exists:
+        if not exists:  #Checks if no matching employee were found
             print("\nUh-oh! There is no employee with that id!\n") 
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("DELETE FROM employees WHERE id = ?", (id,))
         database.commit()
         print("\nEmployee removed successfully!\n")
-        break
+        break #Exit the loop after removing the employee
 
-def record_attendance():
+def record_attendance(): #Records an employee's attendance to the attendance database
     while True:
         try:
             print("To record an attendance, please add the following: ")
             id = int(input("Enter the id of the employee you would like to record attendance: "))
-        except ValueError:
+        except ValueError: #Catches error if user didn't eneter a number
             print("\nUh-oh! Please enter a number!\n")
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("SELECT 1 from employees WHERE id = ? LIMIT 1", (id,))
         exists = cursor.fetchone()
 
-        if not exists:
+        if not exists: #Checks if no matching employee were found
             print("\nUh-oh! There is no employee with that id!\n") 
-            continue
+            continue #Restart the loop to ask for input again
         
         while True:
             date = input("Enter date of attendance (YYYY-MM-DD): ")
             try:
                 hours = float(input("Enter the hours worked: "))
-                break
-            except ValueError:
+                break #breaks out of loop if a valid option was entered
+            except ValueError: #Catches error if user didn't eneter a number
                 print("\nUh-oh! Please enter a number!\n")
-                continue
+                continue #Restart the loop to ask for input again
         
         cursor.execute("INSERT INTO attendance (employee_id, date, hours) VALUES (?, ?, ?)", (id, date, hours))
         database.commit()
         print("\nAttendance added successfully!\n")
-        break
+        break #Exit the loop after recording attendance
 
-def update_attendance():
+def update_attendance(): #Updates an employee's attendance to the attendance database
     while True:
         try:
             print("To update an attendance, please add the following: ")
             id = int(input("Enter the id of the attendance you would like to update: "))
-        except ValueError:
+        except ValueError:  #Catches error if user didn't eneter a number
             print("\nUh-oh! Please enter a number!\n")
-            continue
+            continue #Restart the loop to ask for input again
         
         cursor.execute("SELECT 1 from attendance WHERE id = ? LIMIT 1", (id,))
         exists = cursor.fetchone()
 
-        if not exists:
+        if not exists: #Checks if no matching employee were found
             print("\nUh-oh! There is no attendance with that id!\n") 
-            continue
+            continue #Restart the loop to ask for input again
 
         while True:
             print("What would you like to update:")
@@ -158,34 +158,34 @@ def update_attendance():
             print("- Hours ")
             choice = input("Enter your choice: ").strip().lower()
             
-            if choice not in ["employee id", "date", "hours"]:
+            if choice not in ["employee id", "date", "hours"]: #Checks if user entered a valid option
                 print("\nUh-oh! Please enter a valid option!\n")
-                continue
+                continue #Restart the loop to ask for input again
 
             while True:
                 if choice == "employee id":
                     try:
                         update = int(input("Enter the new employee id: "))
-                    except ValueError:
+                    except ValueError:  #Catches error if user didn't eneter a number
                         print("\nUh-oh! Please enter a number!\n")
-                        continue
+                        continue #Restart the loop to ask for input again
                 elif choice == "hours":
                     try:
                         update = float(input("Enter the new hours: "))
-                    except ValueError:
+                    except ValueError:  #Catches error if user didn't eneter a number
                         print("\nUh-oh! Please enter a number!\n")
-                        continue
+                        continue #Restart the loop to ask for input again
                 else:
                     update = input("Enter the new date (YYYY-MM-DD): ")
-                break
-            break
+                break #breaks out of loop if a valid option was entered
+            break #breaks out of loop if a valid option was entered
 
         cursor.execute(f"UPDATE attendance SET {choice} = ? WHERE id = ?", (update, id))
         database.commit()
         print("\nAttendance updated successfully!\n")
-        break
+        break #Exit the loop after updating attendance
 
-def search():
+def search(): #Searches for employee names similar to the input
     while True:
         print("To search for an employee, please add the following: ")
         name = input("Enter the name of the employee you want to search for: ").strip()
@@ -193,9 +193,9 @@ def search():
         cursor.execute("SELECT * from employees WHERE name LIKE ?", (f"%{name}%",))
         exists = cursor.fetchall()
 
-        if not exists:
+        if not exists: #Checks if no matching employee were found
             print("\nUh-oh! There is no employee with that name!\n") 
-            continue
+            continue #Restart the loop to ask for input again
 
         print(f"\nEmployee names that match *{name}*:\n")
 
@@ -203,26 +203,26 @@ def search():
         header = [description[0] for description in cursor.description]
         print(header)
         
-        for results in exists:
-            print(results)
+        for results in exists: 
+            print(results) #Prints out all the employee similar to the input
         print()
-        break
+        break #Exit the loop after searching 
 
-def reports():
+def reports(): #Prints out the selected employee's monthly payroll
     while True:
         try:
             print("To view an employee's report, please add the following: ")
             id = int(input("Enter the id of the attendance you would like to update: "))
-        except ValueError:
+        except ValueError: #Catches error if user didn't eneter a number
             print("\nUh-oh! Please enter a number!\n")
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("SELECT 1 from employees WHERE id = ? LIMIT 1", (id,))
         exists = cursor.fetchone()
 
-        if not exists:
+        if not exists: #Checks if no matching employee were found
             print("\nUh-oh! There is no employee with that id!\n") 
-            continue
+            continue #Restart the loop to ask for input again
 
         cursor.execute("SELECT hours, date from attendance WHERE employee_id = ?", (id,))
         attendances = cursor.fetchall()
@@ -232,26 +232,26 @@ def reports():
             year = input("Enter the year you want to calculate monthly payroll: ")
             date = input("Enter the month you want to calculate monthly payroll (01-12): ")
 
-            if date not in months:
+            if date not in months: #Checks if user entered a valid option
                 print("\nUh-oh! Invalid month! Please enter the month (01-12)\n") 
-                continue
+                continue #Restart the loop to ask for input again
             
             attendances = list(
                 filter(lambda attendance: attendance[1][:7] == year + "-" + date, attendances)
-                )
+                ) #Filters out attendance that aren't in the month and year entered by user
 
-            hours = sum(hour[0] for hour in attendances)
+            hours = sum(hour[0] for hour in attendances) #Adds all the hours in the attendances list
             cursor.execute("SELECT hourly_rate from employees WHERE id = ?", (id,))
             hourly_rate = cursor.fetchone()[0]
 
-            monthly_payroll = round(hours * hourly_rate, 2)
-            break
+            monthly_payroll = round(hours * hourly_rate, 2) #Calculates monthly payroll by multiplying total hours by the hourly rate
+            break #breaks out of loop if a valid option was entered
 
         cursor.execute("SELECT name from employees WHERE id = ?", (id,))
         name = cursor.fetchone()[0]         
 
         print(f"\nEmployee ID: {id} | Monthly Payroll for {name}: £{monthly_payroll}\n")
-        break
+        break #Exit the loop after printing the reports
 
 def main():
     choices = ["add employee", "update employee", "remove employee", "search employee", "record attendance", "update attendance", "view reports"]
