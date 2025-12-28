@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 database = sqlite3.connect("company.db")
 cursor = database.cursor()
@@ -122,13 +123,18 @@ def record_attendance(): #Records an employee's attendance to the attendance dat
             continue #Restart the loop to ask for input again
         
         while True:
-            date = input("Enter date of attendance (YYYY-MM-DD): ")
+            try:
+                date = input("Enter the date (YYYY-MM-DD): ")
+                datetime.strptime(date, "%Y-%m-%d")
+            except ValueError:
+                    print("\nInvalid date format!\n")
+                    continue #Restart the loop to ask for input again
             try:
                 hours = float(input("Enter the hours worked: "))
                 break #breaks out of loop if a valid option was entered
             except ValueError: #Catches error if user didn't eneter a number
                 print("\nUh-oh! Please enter a number!\n")
-                continue #Restart the loop to ask for input again
+                continue #Restart the loop to ask for input again   
         
         cursor.execute("INSERT INTO attendance (employee_id, date, hours) VALUES (?, ?, ?)", (id, date, hours))
         database.commit()
@@ -169,14 +175,30 @@ def update_attendance(): #Updates an employee's attendance to the attendance dat
                     except ValueError:  #Catches error if user didn't eneter a number
                         print("\nUh-oh! Please enter a number!\n")
                         continue #Restart the loop to ask for input again
+
+                    cursor.execute("SELECT 1 from employees WHERE id = ? LIMIT 1", (id,))
+                    exists = cursor.fetchone()
+
+                    if not exists:  #Checks if no matching employee were found
+                        print("\nUh-oh! There is no employee with that id!\n") 
+                        continue #Restart the loop to ask for input again
+                        
                 elif choice == "hours":
                     try:
                         update = float(input("Enter the new hours: "))
                     except ValueError:  #Catches error if user didn't eneter a number
                         print("\nUh-oh! Please enter a number!\n")
                         continue #Restart the loop to ask for input again
+
                 else:
-                    update = input("Enter the new date (YYYY-MM-DD): ")
+                    while True:
+                        try:
+                            update = input("Enter new date (YYYY-MM-DD): ")
+                            datetime.strptime(update, "%Y-%m-%d")
+                            break
+                        except ValueError:
+                            print("\nInvalid date format!\n")
+
                 break #breaks out of loop if a valid option was entered
             break #breaks out of loop if a valid option was entered
 
@@ -228,19 +250,16 @@ def reports(): #Prints out the selected employee's monthly payroll
         attendances = cursor.fetchall()
 
         while True:
-            months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
-            year = input("Enter the year you want to calculate monthly payroll: ")
-            date = input("Enter the month you want to calculate monthly payroll (01-12): ")
-
-            if date not in months: #Checks if user entered a valid option
-                print("\nUh-oh! Invalid month! Please enter the month (01-12)\n") 
+            try:
+                year_month = input("Enter the date you want to calculate monthly payroll (YYYY-MM): ")
+                datetime.strptime(year_month, "%Y-%m")
+            except ValueError:
+                print("\nInvalid date format!\n")
                 continue #Restart the loop to ask for input again
-            
-            attendances = list(
-                filter(lambda attendance: attendance[1][:7] == year + "-" + date, attendances)
-                ) #Filters out attendance that aren't in the month and year entered by user
 
-            hours = sum(hour[0] for hour in attendances) #Adds all the hours in the attendances list
+            cursor.execute("SELECT hours FROM attendance WHERE employee_id = ? AND strftime('%Y-%m', date) = ?", (id, year_month))
+
+            hours = sum(hour[0] for hour in cursor.fetchall()) #Adds all the hours in the filtered attendances list
             cursor.execute("SELECT hourly_rate from employees WHERE id = ?", (id,))
             hourly_rate = cursor.fetchone()[0]
 
