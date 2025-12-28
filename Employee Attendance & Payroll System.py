@@ -26,7 +26,7 @@ def sql_database(): #Creates two database if it doesn't exist already
     )
     """)
 
-    database.commit()
+    database.commit() #Saves changes
 
 def add_employee(): #Adds new employee to the employees database
     print("To add the new employee, please add the following: ")
@@ -79,7 +79,7 @@ def update_employee(): #Updates an employee in the employees database
                 else:
                     cursor.execute(f"UPDATE employees SET {choice} = ? WHERE id = ?", (update.strip().lower().title(), id))
                 
-                database.commit()
+                database.commit() #Saves changes
                 print("\nThe record was updated successfully!\n")
                 break #breaks out of loop if a valid option was entered
             break #breaks out of loop if a valid option was entered
@@ -102,7 +102,7 @@ def remove_employee(): #Removes an employee from the employees database
             continue #Restart the loop to ask for input again
 
         cursor.execute("DELETE FROM employees WHERE id = ?", (id,))
-        database.commit()
+        database.commit() #Saves changes
         print("\nEmployee removed successfully!\n")
         break #Exit the loop after removing the employee
 
@@ -137,7 +137,7 @@ def record_attendance(): #Records an employee's attendance to the attendance dat
                 continue #Restart the loop to ask for input again   
         
         cursor.execute("INSERT INTO attendance (employee_id, date, hours) VALUES (?, ?, ?)", (id, date, hours))
-        database.commit()
+        database.commit() #Saves changes
         print("\nAttendance added successfully!\n")
         break #Exit the loop after recording attendance
 
@@ -203,7 +203,7 @@ def update_attendance(): #Updates an employee's attendance to the attendance dat
             break #breaks out of loop if a valid option was entered
 
         cursor.execute(f"UPDATE attendance SET {choice} = ? WHERE id = ?", (update, id))
-        database.commit()
+        database.commit() #Saves changes
         print("\nAttendance updated successfully!\n")
         break #Exit the loop after updating attendance
 
